@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -77,20 +78,28 @@ public class ChooseActivity extends AppCompatActivity implements View.OnClickLis
                 showDialog();
                 break;
             case R.id.part1:
-                Intent intent1 = new Intent(getApplicationContext(), CoordinatesActivity.class);
-                ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-                bmp.compress(Bitmap.CompressFormat.JPEG, 80, baos1);
-                byte[] bitmapByte1 = baos1.toByteArray();
-                intent1.putExtra("bitmap", bitmapByte1);
-                startActivity(intent1);
+                if (bmp != null) {
+                    Intent intent1 = new Intent(getApplicationContext(), CoordinatesActivity.class);
+                    ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+                    bmp.compress(Bitmap.CompressFormat.JPEG, 80, baos1);
+                    byte[] bitmapByte1 = baos1.toByteArray();
+                    intent1.putExtra("bitmap", bitmapByte1);
+                    startActivity(intent1);
+                } else {
+                    Toast.makeText(getApplicationContext(), "请先导入或下载一张图片", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.part2:
-                Intent intent2 = new Intent(getApplicationContext(), ColorActivity.class);
-                ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-                bmp.compress(Bitmap.CompressFormat.JPEG, 80, baos2);
-                byte[] bitmapByte2 = baos2.toByteArray();
-                intent2.putExtra("bitmap", bitmapByte2);
-                startActivity(intent2);
+                if (bmp != null) {
+                    Intent intent2 = new Intent(getApplicationContext(), ColorActivity.class);
+                    ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+                    bmp.compress(Bitmap.CompressFormat.JPEG, 80, baos2);
+                    byte[] bitmapByte2 = baos2.toByteArray();
+                    intent2.putExtra("bitmap", bitmapByte2);
+                    startActivity(intent2);
+                } else {
+                    Toast.makeText(getApplicationContext(), "请先导入或下载一张图片", Toast.LENGTH_SHORT).show();
+                }
                 break;
 
         }
@@ -112,13 +121,13 @@ public class ChooseActivity extends AppCompatActivity implements View.OnClickLis
         int width = dm.widthPixels;
         int height = dm.heightPixels;
 
-        int hhh = (int)height/2;
+        int dialogHeight = (int) height / 2;
 
 
         final Dialog alertDialog = new AlertDialog.Builder(ChooseActivity.this).setView(dialog).create();
         alertDialog.setCancelable(true);
         alertDialog.show();
-        alertDialog.getWindow().setLayout(width, hhh);
+        alertDialog.getWindow().setLayout(width, dialogHeight);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> view, View view1, int i, long l) {
