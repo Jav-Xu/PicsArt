@@ -1,11 +1,12 @@
 package com.xuzhihui.picsart.application;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
-import com.xuzhihui.picsart.util.BitmapCache;
+import com.xuzhihui.picsart.cache.MyDoubleCache;
 
 /**
  * Project Name:  PicsArt
@@ -18,15 +19,25 @@ import com.xuzhihui.picsart.util.BitmapCache;
 
 public class MyApplication extends Application {
 
+    public static Context mContext;
     public static ImageLoader mLoader;
     public static RequestQueue mQueue;
-    public static BitmapCache mCache;
+    public static MyDoubleCache mDoubleCache;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mCache = new BitmapCache();
-        mQueue = Volley.newRequestQueue(getApplicationContext());
-        mLoader = new ImageLoader(mQueue, mCache);
+        mContext = getApplicationContext();
+        initVolley();
+    }
+
+    public static Context getContext() {
+        return mContext;
+    }
+
+    private void initVolley() {
+        mDoubleCache = new MyDoubleCache();
+        mQueue = Volley.newRequestQueue(mContext);
+        mLoader = new ImageLoader(mQueue, mDoubleCache);
     }
 }

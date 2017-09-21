@@ -3,6 +3,7 @@ package com.xuzhihui.picsart.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,11 +12,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.xuzhihui.picsart.R;
 import com.xuzhihui.picsart.bean.Image;
 
 import java.util.List;
+
+import static com.xuzhihui.picsart.application.MyApplication.mLoader;
 
 /**
  * Project Name:  PicsArt
@@ -28,12 +32,12 @@ import java.util.List;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
-
     private Context mContext;
     private List<Image> mImageList;
     private LayoutInflater mLayoutInflater;
     private WindowManager mWindowManager;
     private int width;
+    private ImageLoader mImageLoader;
 
     public ImageAdapter(Context context, List<Image> imageList) {
         mContext = context;
@@ -41,6 +45,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         mLayoutInflater = LayoutInflater.from(context);
         mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         width = mWindowManager.getDefaultDisplay().getWidth();
+        mImageLoader = mLoader;
     }
 
     public class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -58,7 +63,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
         public void bindHolder(Image image) {
             mImage = image;
-            Glide.with(mContext).load(image.getUrl()).override(width / 2, 300).into(mImageView);
+            //Glide.with(mContext).load(image.getUrl()).override(width / 2, 300).into(mImageView);
+            loadImageAndSetToImageView(image, mImageView);
         }
 
         @Override
@@ -73,6 +79,24 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                     break;
             }
         }
+    }
+
+    private void loadImageAndSetToImageView(Image image, final ImageView imageView) {
+
+        final String imageUrl = image.getUrl();
+
+        mImageLoader.get(imageUrl, new ImageLoader.ImageListener() {
+            @Override
+            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                Bitmap bitmap = response.getBitmap();
+                if (bitmap != null && imageView != null) {
+                    imageView.setImageBitmap(bitmap);
+                }
+            }
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        }, width / 3, 300, ImageView.ScaleType.FIT_XY);
     }
 
     @Override

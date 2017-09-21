@@ -166,7 +166,7 @@ public class ColorUtil {
         int[] oldPx = new int[width * width];
         int[] newPx = new int[width * width];
         int r,g,b,a;
-        bmp.getPixels(oldPx,0,width,0,0,width,height);
+        bmp.getPixels(oldPx,0,width,0,0,width,height); // java.lang.ArrayIndexOutOfBoundsException
         for (int i = 0; i < width * height; i++){
 
             color = oldPx[i];

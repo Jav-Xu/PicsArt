@@ -28,15 +28,25 @@ public class WallPaperActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private List<Image> mImageList = new ArrayList<>();
-    private RecyclerView.LayoutManager mLayoutmanager;
     private ImageAdapter mImageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallpaper);
-        initData();
         initView();
+        initData();
+    }
+
+    private void initView() {
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+
+        RecyclerView.LayoutManager manager = new GridLayoutManager(WallPaperActivity.this, 3);
+        mImageAdapter = new ImageAdapter(WallPaperActivity.this, mImageList);
+
+        mRecyclerView.setLayoutManager(manager);
+        mRecyclerView.setAdapter(mImageAdapter);
     }
 
     private void initData() {
@@ -46,23 +56,8 @@ public class WallPaperActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("TAG", response.toString());
-                        try {
-                            JSONArray array = response.getJSONArray("results");
-                            for (int i = 0; i < array.length(); i++) {
-                                JSONObject imageObject = array.getJSONObject(i);
-                                String imageUrl = imageObject.getString("url");
-                                String imageName = imageObject.getString("who");
-                                String imageTime = imageObject.getString("publishedAt");
-                                Image image = new Image();
-                                image.setName(imageName);
-                                image.setTime(imageTime);
-                                image.setUrl(imageUrl);
-                                mImageList.add(image);
-                            }
-                            mImageAdapter.notifyDataSetChanged();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        fillListWithJSON(response);
+                        mImageAdapter.notifyDataSetChanged();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -73,16 +68,23 @@ public class WallPaperActivity extends AppCompatActivity {
         mQueue.add(jsonObjectRequest);
     }
 
-
-    private void initView() {
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-
-        RecyclerView.LayoutManager manager = new GridLayoutManager(WallPaperActivity.this, 2);
-        mRecyclerView.setLayoutManager(manager);
-
-        mImageAdapter = new ImageAdapter(WallPaperActivity.this, mImageList);
-        mRecyclerView.setAdapter(mImageAdapter);
+    private void fillListWithJSON(JSONObject response) {
+        try {
+            JSONArray array = response.getJSONArray("results");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject imageObject = array.getJSONObject(i);
+                String imageUrl = imageObject.getString("url");
+                String imageName = imageObject.getString("who");
+                String imageTime = imageObject.getString("publishedAt");
+                Image image = new Image();
+                image.setName(imageName);
+                image.setTime(imageTime);
+                image.setUrl(imageUrl);
+                mImageList.add(image);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }
